@@ -13,8 +13,20 @@ from app.rag.vectorstore import RetrievedChunk
 
 
 def _tokenize(text: str) -> list[str]:
-    """轻量分词：按非字母数字切分，小写化。"""
-    return re.findall(r"[a-z0-9]+", text.lower())
+    """轻量分词：英文按词切分，中文按单字 + 双字组（bigram）切分。
+
+    仅靠 `[a-z0-9]` 会丢弃全部中文，导致 BM25 对中文查询恒为空、
+    Hybrid 检索退化为纯 Dense。加入 CJK 单字与 bigram 后，
+    中英文查询均可参与稀疏检索。
+    """
+    tokens: list[str] = re.findall(r"[a-z0-9]+", text.lower())
+    for seg in re.findall(r"[\u4e00-\u9fff]+", text):
+        if len(seg) == 1:
+            tokens.append(seg)
+        else:
+            tokens.extend(seg)  # 单字
+            tokens.extend(seg[i : i + 2] for i in range(len(seg) - 1))  # bigram
+    return tokens
 
 
 class BM25Index:
