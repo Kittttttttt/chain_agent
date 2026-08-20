@@ -1,0 +1,46 @@
+# DeepResearch Agent 编排
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    env_file: .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+
+  mcp-server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    env_file: .env
+    command: ["python", "mcp_servers/research_server.py"]
+    ports:
+      - "9000:9000"
+    restart: unless-stopped
+
+  # 可选：PostgreSQL（长时记忆 / LangGraph checkpoint 持久化）
+  # postgres:
+  #   image: postgres:16-alpine
+  #   environment:
+  #     POSTGRES_USER: deepresearch
+  #     POSTGRES_PASSWORD: deepresearch
+  #     POSTGRES_DB: deepresearch
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - pgdata:/var/lib/postgresql/data
+
+  # 可选：Qdrant 向量库
+  # qdrant:
+  #   image: qdrant/qdrant:latest
+  #   ports:
+  #     - "6333:6333"
+  #   volumes:
+  #     - qdrant_data:/qdrant/storage
+
+# volumes:
+#   pgdata:
+#   qdrant_data:
