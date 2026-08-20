@@ -1,0 +1,160 @@
+:root {
+  --dr-bg: #0f1420;
+  --dr-bg-soft: #171e2e;
+  --dr-bg-card: #1c2436;
+  --dr-border: #2a3550;
+  --dr-text: #dce3f0;
+  --dr-text-dim: #8b95ab;
+  --dr-accent: #4f8cff;
+  --dr-success: #34c77b;
+  --dr-warn: #e6a23c;
+  --dr-danger: #f56c6c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--dr-bg);
+  color: var(--dr-text);
+  font-family:
+    "Inter", "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+}
+
+a {
+  color: var(--dr-accent);
+  text-decoration: none;
+}
+
+.page {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* 卡片通用样式（暗色） */
+.dr-card {
+  background: var(--dr-bg-card);
+  border: 1px solid var(--dr-border);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.dr-card + .dr-card {
+  margin-top: 16px;
+}
+
+.dr-card__title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mono {
+  font-family: "JetBrains Mono", "Consolas", monospace;
+  font-size: 12px;
+}
+
+/* Element Plus 暗色微调 */
+.el-card {
+  --el-card-bg-color: var(--dr-bg-card);
+  --el-card-border-color: var(--dr-border);
+  background: var(--dr-bg-card);
+  color: var(--dr-text);
+  border: 1px solid var(--dr-border);
+}
+
+.el-table {
+  --el-table-bg-color: transparent;
+  --el-table-tr-bg-color: transparent;
+  --el-table-header-bg-color: var(--dr-bg-soft);
+  --el-table-border-color: var(--dr-border);
+  --el-table-text-color: var(--dr-text);
+  --el-table-header-text-color: var(--dr-text-dim);
+}
+
+/* Markdown 报告样式 */
+.markdown-body {
+  line-height: 1.7;
+  word-wrap: break-word;
+}
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+  border-bottom: 1px solid var(--dr-border);
+  padding-bottom: 6px;
+  margin-top: 24px;
+}
+.markdown-body pre {
+  background: #0b0f18;
+  border: 1px solid var(--dr-border);
+  border-radius: 8px;
+  padding: 12px;
+  overflow-x: auto;
+}
+.markdown-body code {
+  background: #0b0f18;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-family: "JetBrains Mono", "Consolas", monospace;
+  font-size: 12.5px;
+}
+.markdown-body pre code {
+  background: none;
+  padding: 0;
+}
+.markdown-body table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 12px 0;
+}
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid var(--dr-border);
+  padding: 6px 10px;
+  text-align: left;
+}
+.markdown-body blockquote {
+  border-left: 3px solid var(--dr-accent);
+  margin: 0;
+  padding: 2px 12px;
+  color: var(--dr-text-dim);
+}
+.citation-ref {
+  color: var(--dr-accent);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0 2px;
+  white-space: nowrap;
+}
+.citation-ref:hover {
+  text-decoration: underline;
+}
+.citation-ref.unverified {
+  color: var(--dr-warn);
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #33405e;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}

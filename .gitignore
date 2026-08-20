@@ -1,0 +1,13 @@
+# 忽略敏感信息与缓存
+.env
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+data/
+.qdrant/
+dist/
+build/
+.venv/
+logs/
+*.log

@@ -1,0 +1,122 @@
+[
+  {
+    "id": "q1",
+    "question": "What are the current state-of-the-art techniques in retrieval-augmented generation (RAG) as of 2025?",
+    "expected_sources": ["arxiv", "web"],
+    "expected_keywords": ["retrieval", "augmented", "generation", "embedding", "rerank"]
+  },
+  {
+    "id": "q2",
+    "question": "How does LangGraph manage state in multi-agent workflows?",
+    "expected_sources": ["web", "github"],
+    "expected_keywords": ["langgraph", "state", "graph", "agent"]
+  },
+  {
+    "id": "q3",
+    "question": "What is the Transformer architecture and why is attention important?",
+    "expected_sources": ["arxiv", "web"],
+    "expected_keywords": ["transformer", "attention", "sequence", "model"]
+  },
+  {
+    "id": "q4",
+    "question": "Explain Model Context Protocol (MCP) and how it enables tool integration for LLM agents.",
+    "expected_sources": ["web", "github"],
+    "expected_keywords": ["mcp", "protocol", "tool", "context"]
+  },
+  {
+    "id": "q5",
+    "question": "What are the main approaches to evaluate the faithfulness of LLM-generated summaries?",
+    "expected_sources": ["arxiv", "web"],
+    "expected_keywords": ["faithfulness", "evaluation", "hallucination", "summary"]
+  },
+  {
+    "id": "q6",
+    "question": "How do vector databases differ from traditional relational databases for similarity search?",
+    "expected_sources": ["web"],
+    "expected_keywords": ["vector", "database", "similarity", "embedding"]
+  },
+  {
+    "id": "q7",
+    "question": "What techniques are used for efficient fine-tuning of large language models?",
+    "expected_sources": ["arxiv", "web"],
+    "expected_keywords": ["fine-tuning", "lora", "efficient", "parameter"]
+  },
+  {
+    "id": "q8",
+    "question": "Describe the role of BM25 in hybrid retrieval systems.",
+    "expected_sources": ["web", "arxiv"],
+    "expected_keywords": ["bm25", "retrieval", "lexical", "hybrid"]
+  },
+  {
+    "id": "q9",
+    "question": "What is the LoRA method and how does it reduce training costs for LLMs?",
+    "expected_sources": ["arxiv"],
+    "expected_keywords": ["lora", "low-rank", "adaptation", "training"]
+  },
+  {
+    "id": "q10",
+    "question": "How can citation verification improve the reliability of AI research assistants?",
+    "expected_sources": ["web", "arxiv"],
+    "expected_keywords": ["citation", "verification", "reliability", "source"]
+  },
+  {
+    "id": "q11",
+    "question": "What are multi-agent LLM systems and what challenges do they face?",
+    "expected_sources": ["arxiv", "web"],
+    "expected_keywords": ["multi-agent", "llm", "coordination", "challenge"]
+  },
+  {
+    "id": "q12",
+    "question": "How does semantic chunking improve retrieval quality in RAG pipelines?",
+    "expected_sources": ["web", "arxiv"],
+    "expected_keywords": ["chunking", "semantic", "retrieval", "rag"]
+  },
+  {
+    "id": "q13",
+    "question": "What is the role of a reranker in retrieval-augmented generation?",
+    "expected_sources": ["arxiv", "web"],
+    "expected_keywords": ["reranker", "cross-encoder", "retrieval", "ranking"]
+  },
+  {
+    "id": "q14",
+    "question": "Explain the difference between dense and sparse retrieval.",
+    "expected_sources": ["web", "arxiv"],
+    "expected_keywords": ["dense", "sparse", "retrieval", "bm25"]
+  },
+  {
+    "id": "q15",
+    "question": "How do LLM agents use tools to complete complex tasks autonomously?",
+    "expected_sources": ["web"],
+    "expected_keywords": ["agent", "tool", "autonomous", "llm"]
+  },
+  {
+    "id": "q16",
+    "question": "What is the role of memory systems in conversational AI agents?",
+    "expected_sources": ["web", "arxiv"],
+    "expected_keywords": ["memory", "agent", "conversation", "context"]
+  },
+  {
+    "id": "q17",
+    "question": "How does prompt engineering improve LLM reasoning performance?",
+    "expected_sources": ["web"],
+    "expected_keywords": ["prompt", "reasoning", "chain-of-thought", "engineering"]
+  },
+  {
+    "id": "q18",
+    "question": "What are the security risks of prompt injection in LLM applications?",
+    "expected_sources": ["web", "arxiv"],
+    "expected_keywords": ["injection", "security", "prompt", "risk"]
+  },
+  {
+    "id": "q19",
+    "question": "How do embedding models represent semantic meaning in vector space?",
+    "expected_sources": ["web", "arxiv"],
+    "expected_keywords": ["embedding", "vector", "semantic", "representation"]
+  },
+  {
+    "id": "q20",
+    "question": "What is the LangSmith platform and how does it support LLM observability?",
+    "expected_sources": ["web", "github"],
+    "expected_keywords": ["langsmith", "observability", "trace", "llm"]
+  }
+]
