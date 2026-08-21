@@ -107,3 +107,64 @@ class HealthResponse(BaseModel):
     search_provider: str
     vector_backend: str
     embedding_provider: str
+
+
+# ---------------------------------------------------------------------------
+# 知识库（Document Ingestion）
+# ---------------------------------------------------------------------------
+
+
+class KnowledgeDocument(BaseModel):
+    """知识库中文档摘要（按 doc_id 聚合）。"""
+
+    document_id: str
+    title: str = ""
+    source: str = ""
+    file_type: Literal["txt", "markdown", "pdf", "html"] = "txt"
+    page_count: int = 0
+    chunk_count: int = 0
+
+
+class KnowledgeUploadResponse(BaseModel):
+    """文件上传入库响应。"""
+
+    document_id: str
+    title: str
+    file_type: str
+    chunks: int
+    message: str = ""
+
+
+class KnowledgeIndexRequest(BaseModel):
+    """从文本或 URL 入库。"""
+
+    text: str | None = Field(default=None, description="纯文本/Markdown 内容（text 与 url 二选一）")
+    url: str | None = Field(default=None, description="抓取的网页地址")
+    source: str = Field(default="", description="来源标识（默认用 url 或自动生成）")
+    title: str = Field(default="", description="标题（缺省从内容/文件名推导）")
+    file_type: Literal["txt", "markdown", "html"] = "txt"
+
+
+class KnowledgeTestRequest(BaseModel):
+    """知识库检索测试。"""
+
+    query: str = Field(min_length=1, max_length=1000)
+    top_k: int = Field(default=5, ge=1, le=20)
+
+
+class KnowledgeTestResponse(BaseModel):
+    """检索测试结果（各阶段明细）。"""
+
+    query: str
+    dense: list[dict[str, Any]] = Field(default_factory=list)
+    bm25: list[dict[str, Any]] = Field(default_factory=list)
+    hybrid: list[dict[str, Any]] = Field(default_factory=list)
+    reranked: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class KnowledgeDeleteResponse(BaseModel):
+    """删除文档响应。"""
+
+    document_id: str
+    deleted_chunks: int
+    message: str = ""

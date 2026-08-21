@@ -21,7 +21,7 @@ _WORKER_SYSTEM = """你是一名深度研究执行者，为研究问题收集可
 - search_arxiv(query): 学术论文检索
 - search_github(query): 开源仓库检索
 - read_webpage(url): 读取网页正文
-- retrieve_documents(query): 在已收集文档中检索
+- retrieve_documents(query): 检索项目内置知识库（向量+BM25+Rerank 混合检索，返回相关片段），适合查询内部文档资料的问题
 
 规则：
 1. 分析当前证据缺口后，自主决定调用哪个工具。
@@ -48,6 +48,7 @@ class ResearchWorkerAgent:
         context: str,
         iteration: int,
         max_iterations: int,
+        source_hint: str = "",
     ) -> dict[str, Any]:
         """执行一轮 Agent Loop，返回结构化结果。
 
@@ -59,13 +60,19 @@ class ResearchWorkerAgent:
               "tool_calls": [{"tool", "input", "output", "latency", "success"}],
             }
         """
+        hint = ""
+        if source_hint:
+            hint = (
+                f"\n本子任务建议信息来源：{source_hint}。"
+                "若包含 document，请优先调用 retrieve_documents 工具检索项目内置知识库。"
+            )
         messages = [
             SystemMessage(content=_WORKER_SYSTEM),
             HumanMessage(
                 content=(
                     f"研究问题：{question}\n"
                     f"当前已有上下文（第 {iteration}/{max_iterations} 轮）：\n{context[:3000]}\n"
-                    "请决定本轮动作。"
+                    f"请决定本轮动作。{hint}"
                 )
             ),
         ]
@@ -119,13 +126,28 @@ class ResearchWorkerAgent:
                     data = data["results"]  # retrieve_documents 等返回 {results, detail}
                 if result.success and isinstance(data, list):
                     for item in data[:3]:
-                        if isinstance(item, dict) and item.get("url"):
+                        if not isinstance(item, dict):
+                            continue
+                        text = (
+                            item.get("snippet")
+                            or item.get("text")
+                            or item.get("title")
+                            or ""
+                        )[:300]
+                        url = item.get("url", "")
+                        if not url and isinstance(item.get("metadata"), dict):
+                            # RAG chunk 无 URL：用知识库 doc_id 作为来源标识
+                            meta = item["metadata"]
+                            url = meta.get("url") or f"knowledge://{meta.get('doc_id') or item.get('id', 'doc')}"
+                        meta = item.get("metadata") if isinstance(item.get("metadata"), dict) else {}
+                        if text and url:
                             evidence.append(
                                 {
-                                    "claim": (item.get("snippet") or item.get("title") or "")[:300],
-                                    "source_url": item.get("url", ""),
-                                    "title": item.get("title", ""),
+                                    "claim": text,
+                                    "source_url": url,
+                                    "title": item.get("title", "") or meta.get("title", "") or url,
                                     "confidence": 0.6,
+                                    "source_type": "document" if url.startswith("knowledge://") else "web",
                                 }
                             )
             # 将 ToolMessage 结果回填给模型（必须，否则违反 OpenAI 协议）

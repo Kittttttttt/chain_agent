@@ -69,11 +69,15 @@ class Settings(BaseSettings):
     ddg_max_results: int = 5
 
     # ---------- RAG / 向量库 ----------
-    # embedding_provider: dashscope(推荐外部API) / openai / ollama / mock(测试兜底)
-    embedding_provider: Literal["dashscope", "openai", "ollama", "mock"] = "mock"
+    # embedding_provider: dashscope(推荐外部API) / openai / ollama / siliconflow / mock(测试兜底)
+    embedding_provider: Literal["dashscope", "openai", "ollama", "siliconflow", "mock"] = "mock"
     embedding_model: str = "text-embedding-v3"
     embedding_dim: int = 1024
     embedding_batch_size: int = 16
+
+    # SiliconFlow（硅基流动，OpenAI 兼容 API，可同时用于 Embedding 与 LLM）
+    siliconflow_api_key: str = ""
+    siliconflow_base_url: str = "https://api.siliconflow.cn/v1/"
 
     # Qdrant：URL 为空时使用本地模式(local path)，并自动回退到内存向量库
     qdrant_url: str = ""

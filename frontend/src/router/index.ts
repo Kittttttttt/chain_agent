@@ -15,6 +15,11 @@ const router = createRouter({
       component: () => import("@/views/RunsList.vue"),
     },
     {
+      path: "/knowledge",
+      name: "knowledge",
+      component: () => import("@/views/KnowledgeBase.vue"),
+    },
+    {
       path: "/runs/:id",
       name: "run-detail",
       component: () => import("@/views/RunDetail.vue"),

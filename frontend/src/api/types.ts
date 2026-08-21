@@ -195,3 +195,51 @@ export interface TraceEntry {
   detail: string;
   extra?: AgentEvent;
 }
+
+// ---------------------------------------------------------------------------
+// 知识库（Document Ingestion）
+// ---------------------------------------------------------------------------
+
+export type KnowledgeFileType = "txt" | "markdown" | "pdf" | "html";
+
+/** 知识库文档摘要（按 doc_id 聚合） */
+export interface KnowledgeDocument {
+  document_id: string;
+  title: string;
+  source: string;
+  file_type: KnowledgeFileType;
+  page_count: number;
+  chunk_count: number;
+}
+
+/** 上传 / 索引入库响应 */
+export interface KnowledgeUploadResponse {
+  document_id: string;
+  title: string;
+  file_type: string;
+  chunks: number;
+  message: string;
+}
+
+/** 从文本 / URL 入库请求 */
+export interface KnowledgeIndexRequest {
+  text?: string;
+  url?: string;
+  source?: string;
+  title?: string;
+  file_type?: KnowledgeFileType;
+}
+
+/** 检索测试请求 / 响应 */
+export interface KnowledgeTestRequest {
+  query: string;
+  top_k?: number;
+}
+
+export interface KnowledgeTestResponse {
+  query: string;
+  dense: RetrievedChunk[];
+  bm25: RetrievedChunk[];
+  hybrid: RetrievedChunk[];
+  reranked: RetrievedChunk[];
+}

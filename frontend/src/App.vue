@@ -10,6 +10,7 @@ const activePath = ref(route.path);
 const nav = [
   { path: "/research", label: "Research Console" },
   { path: "/runs", label: "历史任务" },
+  { path: "/knowledge", label: "知识库" },
   { path: "/settings", label: "配置" },
 ];
 

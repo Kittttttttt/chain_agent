@@ -110,8 +110,11 @@ def planner_node(state: AgentState) -> dict[str, Any]:
 
 
 def _current_task(state: AgentState) -> Subtask:
-    """取当前（或第一个 pending）子任务。"""
+    """取当前子任务：优先 document（知识库检索）子任务，其次第一个 pending。"""
     plan = state["research_plan"]
+    for st in plan.subtasks:
+        if st.status == "pending" and "document" in st.required_sources:
+            return st
     for st in plan.subtasks:
         if st.status == "pending":
             return st
@@ -137,6 +140,7 @@ def research_worker(state: AgentState) -> dict[str, Any]:
         context=context,
         iteration=iteration,
         max_iterations=max_iter,
+        source_hint="、".join(task.required_sources),
     )
 
     new_tool_calls = result["tool_calls"]
@@ -185,13 +189,14 @@ def research_worker(state: AgentState) -> dict[str, Any]:
     for ev in result["evidence"]:
         url = ev.get("source_url", "")
         if url and url not in existing_urls:
+            source_type = ev.get("source_type", "document" if url.startswith("knowledge://") else "web")
             new_evidence.append(
                 Evidence(
                     claim=ev["claim"],
                     source=Source(
                         url=url,
                         title=ev.get("title", ""),
-                        source_type="web",
+                        source_type=source_type,
                         snippet=ev["claim"],
                     ),
                     relevance=0.8,

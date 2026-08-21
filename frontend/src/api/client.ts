@@ -4,6 +4,11 @@
 import axios from "axios";
 import type {
   HealthInfo,
+  KnowledgeDocument,
+  KnowledgeIndexRequest,
+  KnowledgeTestRequest,
+  KnowledgeTestResponse,
+  KnowledgeUploadResponse,
   ResearchRequest,
   ResearchResponse,
   ResearchResult,
@@ -30,6 +35,42 @@ export const api = {
   /** 单个任务完整结果 */
   getRun: (id: string) =>
     http.get<ResearchResult>(`/api/research/${id}`).then((r) => r.data),
+
+  // -------------------------------------------------------------------------
+  // 知识库
+  // -------------------------------------------------------------------------
+
+  /** 上传文档（TXT/Markdown/PDF/HTML）→ 自动解析/切块/Embedding/入库 */
+  uploadKnowledge: (file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    return http
+      .post<KnowledgeUploadResponse>("/api/knowledge/upload", form, {
+        timeout: 180_000,
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((r) => r.data);
+  },
+
+  /** 从文本 / URL 索引入库 */
+  indexKnowledge: (req: KnowledgeIndexRequest) =>
+    http.post<KnowledgeUploadResponse>("/api/knowledge/index", req, { timeout: 120_000 }).then((r) => r.data),
+
+  /** 知识库文档列表 */
+  listKnowledge: () =>
+    http.get<KnowledgeDocument[]>("/api/knowledge/documents").then((r) => r.data),
+
+  /** 删除文档（Qdrant + BM25 同步） */
+  deleteKnowledge: (documentId: string) =>
+    http
+      .delete<{ document_id: string; deleted_chunks: number; message: string }>(
+        `/api/knowledge/${encodeURIComponent(documentId)}`,
+      )
+      .then((r) => r.data),
+
+  /** 检索测试（Dense/BM25/Hybrid/Rerank 各阶段明细） */
+  testKnowledge: (req: KnowledgeTestRequest) =>
+    http.post<KnowledgeTestResponse>("/api/knowledge/test", req).then((r) => r.data),
 };
 
 /**

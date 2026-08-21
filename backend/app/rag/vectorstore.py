@@ -59,6 +59,14 @@ class VectorStore(ABC):
     @abstractmethod
     def count(self) -> int: ...
 
+    def all_docs(self) -> list[StoredDocument]:
+        """全量返回库中文档（默认空，用于重建 BM25 等内存索引）。"""
+        return []
+
+    def delete_by_doc_id(self, doc_id: str) -> int:
+        """删除指定文档 ID 的全部 chunk，返回删除条数。"""
+        return 0
+
     def clear(self) -> None: ...
 
 
@@ -95,6 +103,14 @@ class MemoryVectorStore(VectorStore):
 
     def count(self) -> int:
         return len(self._docs)
+
+    def all_docs(self) -> list[StoredDocument]:
+        return list(self._docs)
+
+    def delete_by_doc_id(self, doc_id: str) -> int:
+        before = len(self._docs)
+        self._docs = [d for d in self._docs if d.metadata.get("doc_id") != doc_id]
+        return before - len(self._docs)
 
     def clear(self) -> None:
         self._docs = []
@@ -182,6 +198,64 @@ class QdrantVectorStore(VectorStore):
 
     def count(self) -> int:
         return int(self._client.count(self._collection).count)
+
+    def all_docs(self) -> list[StoredDocument]:
+        """全量拉取集合中文档（payload 还原原始 id 与文本，用于重建 BM25 索引）。"""
+        docs: list[StoredDocument] = []
+        offset: Any = None
+        while True:
+            page, offset = self._client.scroll(
+                collection_name=self._collection,
+                limit=100,
+                offset=offset,
+                with_payload=True,
+                with_vectors=False,
+            )
+            for point in page:
+                payload = point.payload or {}
+                docs.append(
+                    StoredDocument(
+                        id=str(payload.get("_source_id", point.id)),
+                        text=payload.get("text", ""),
+                        vector=None,
+                        metadata={k: v for k, v in payload.items() if k not in ("text", "_source_id")},
+                    )
+                )
+            if offset is None:
+                break
+        return docs
+
+    def delete_by_doc_id(self, doc_id: str) -> int:
+        """按 metadata.doc_id 删除全部 chunk；旧数据（无 doc_id）按 _source_id 前缀兜底。"""
+        from qdrant_client import models
+
+        filters = [
+            models.Filter(
+                must=[
+                    models.FieldCondition(key="doc_id", match=models.MatchValue(value=doc_id))
+                ]
+            ),
+            models.Filter(
+                must=[
+                    models.FieldCondition(key="_source_id", match=models.MatchText(text=doc_id))
+                ]
+            ),
+        ]
+        for flt in filters:
+            points = self._client.scroll(
+                collection_name=self._collection,
+                limit=1000,
+                scroll_filter=flt,
+                with_payload=False,
+                with_vectors=False,
+            )[0]
+            if points:
+                self._client.delete(
+                    collection_name=self._collection,
+                    points_selector=models.FilterSelector(filter=flt),
+                )
+                return len(points)
+        return 0
 
     def clear(self) -> None:
         self._client.delete_collection(self._collection)

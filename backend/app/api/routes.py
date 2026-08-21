@@ -1,15 +1,27 @@
-"""FastAPI 路由：研究任务的受理、查询与健康检查。"""
+"""FastAPI 路由：研究任务的受理、查询、知识库管理与健康检查。"""
 from __future__ import annotations
 
 import json
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, File, HTTPException, UploadFile
 from loguru import logger
 from sse_starlette.sse import EventSourceResponse
 
 from app.config import get_settings
-from app.models import HealthResponse, ResearchRequest, ResearchResponse, ResearchResult
+from app.models import (
+    HealthResponse,
+    KnowledgeDeleteResponse,
+    KnowledgeDocument,
+    KnowledgeIndexRequest,
+    KnowledgeTestRequest,
+    KnowledgeTestResponse,
+    KnowledgeUploadResponse,
+    ResearchRequest,
+    ResearchResponse,
+    ResearchResult,
+)
+from app.rag.docloader import is_supported_filename, load_file, load_text, load_url
 from app.services import get_research_service
 
 router = APIRouter()
@@ -146,4 +158,115 @@ def _to_result(session: dict[str, Any]) -> ResearchResult:
         trace=session.get("trace", []),
         events=session.get("events", []),
         error=session.get("error"),
+    )
+
+
+# ---------------------------------------------------------------------------
+# 知识库（Document Ingestion）
+# ---------------------------------------------------------------------------
+
+
+def _get_pipeline():
+    from app.rag.pipeline import get_rag_pipeline
+
+    return get_rag_pipeline()
+
+
+@router.post("/api/knowledge/upload", response_model=KnowledgeUploadResponse, tags=["knowledge"])
+async def upload_knowledge(file: UploadFile = File(...)) -> KnowledgeUploadResponse:
+    """上传文档（TXT / Markdown / PDF / HTML）→ 解析 → 切块 → Embedding → Qdrant + BM25。"""
+    if not is_supported_filename(file.filename or ""):
+        raise HTTPException(status_code=400, detail="不支持的文件类型，仅支持 txt / md / markdown / pdf / html")
+
+    content = await file.read()
+    if not content:
+        raise HTTPException(status_code=400, detail="上传文件为空")
+
+    try:
+        docs = load_file(file.filename or "upload.txt", content, source=file.filename or "")
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    try:
+        result = _get_pipeline().add_documents(docs)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    logger.info("知识库上传: {} → {} chunks", file.filename, result["chunks"])
+    return KnowledgeUploadResponse(
+        document_id=result["document_id"],
+        title=result["title"],
+        file_type=str(docs[0].metadata.get("file_type", "txt")),
+        chunks=int(result["chunks"]),
+        message=result["message"],
+    )
+
+
+@router.post("/api/knowledge/index", response_model=KnowledgeUploadResponse, tags=["knowledge"])
+async def index_knowledge(req: KnowledgeIndexRequest) -> KnowledgeUploadResponse:
+    """从文本 / URL 入库（Loader → Cleaning → Chunking → Embedding → Qdrant + BM25）。"""
+    if not req.text and not req.url:
+        raise HTTPException(status_code=400, detail="text 与 url 至少提供一个")
+
+    try:
+        if req.url:
+            docs = load_url(req.url)
+            title = req.title or docs[0].metadata.get("title", "")
+            file_type = "html"
+        else:
+            docs = load_text(
+                req.text or "",
+                source=req.source or "memory",
+                title=req.title or "text",
+                file_type=req.file_type,
+            )
+            title = req.title
+            file_type = req.file_type
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    try:
+        result = _get_pipeline().add_documents(docs)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    logger.info("知识库索引: {} → {} chunks", req.url or req.source, result["chunks"])
+    return KnowledgeUploadResponse(
+        document_id=result["document_id"],
+        title=title,
+        file_type=file_type,
+        chunks=int(result["chunks"]),
+        message=result["message"],
+    )
+
+
+@router.get("/api/knowledge/documents", response_model=list[KnowledgeDocument], tags=["knowledge"])
+async def list_knowledge() -> list[KnowledgeDocument]:
+    """知识库文档列表（doc_id / 标题 / 类型 / 页数 / chunk 数）。"""
+    return [KnowledgeDocument(**item) for item in _get_pipeline().list_documents()]
+
+
+@router.delete("/api/knowledge/{document_id}", response_model=KnowledgeDeleteResponse, tags=["knowledge"])
+async def delete_knowledge(document_id: str) -> KnowledgeDeleteResponse:
+    """删除指定文档的全部 chunk（Qdrant + BM25 同步）。"""
+    removed = _get_pipeline().delete_document(document_id)
+    if removed == 0:
+        raise HTTPException(status_code=404, detail=f"文档不存在或已删除: {document_id}")
+    return KnowledgeDeleteResponse(
+        document_id=document_id,
+        deleted_chunks=removed,
+        message=f"已删除 {removed} 个 chunk",
+    )
+
+
+@router.post("/api/knowledge/test", response_model=KnowledgeTestResponse, tags=["knowledge"])
+async def test_knowledge(req: KnowledgeTestRequest) -> KnowledgeTestResponse:
+    """知识库检索测试：Dense + BM25 → Hybrid → Rerank 各阶段明细。"""
+    detail = _get_pipeline().retrieve_detailed(req.query, top_k=req.top_k)
+    return KnowledgeTestResponse(
+        query=detail["query"],
+        dense=detail["dense"],
+        bm25=detail["bm25"],
+        hybrid=detail["hybrid"],
+        reranked=detail["reranked"],
     )
