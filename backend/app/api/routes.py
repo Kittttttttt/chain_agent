@@ -1,23 +1,14 @@
-<<<<<<< HEAD
 """FastAPI 路由：研究任务的受理、查询、知识库管理与健康检查。"""
-=======
-"""FastAPI 路由：研究任务的受理、查询与健康检查。"""
->>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
 from __future__ import annotations
 
 import json
 from typing import Any
 
-<<<<<<< HEAD
 from fastapi import APIRouter, File, HTTPException, UploadFile
-=======
-from fastapi import APIRouter, HTTPException
->>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
 from loguru import logger
 from sse_starlette.sse import EventSourceResponse
 
 from app.config import get_settings
-<<<<<<< HEAD
 from app.models import (
     HealthResponse,
     KnowledgeDeleteResponse,
@@ -31,9 +22,6 @@ from app.models import (
     ResearchResult,
 )
 from app.rag.docloader import is_supported_filename, load_file, load_text, load_url
-=======
-from app.models import HealthResponse, ResearchRequest, ResearchResponse, ResearchResult
->>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
 from app.services import get_research_service
 
 router = APIRouter()
@@ -171,7 +159,6 @@ def _to_result(session: dict[str, Any]) -> ResearchResult:
         events=session.get("events", []),
         error=session.get("error"),
     )
-<<<<<<< HEAD
 
 
 # ---------------------------------------------------------------------------
@@ -283,5 +270,3 @@ async def test_knowledge(req: KnowledgeTestRequest) -> KnowledgeTestResponse:
         hybrid=detail["hybrid"],
         reranked=detail["reranked"],
     )
-=======
->>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6

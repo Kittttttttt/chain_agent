@@ -193,11 +193,8 @@ def build_embedding_provider(
     openai_base_url: str = "",
     embedding_model: str = "text-embedding-v3",
     ollama_base_url: str = "http://localhost:11434",
-<<<<<<< HEAD
     siliconflow_api_key: str = "",
     siliconflow_base_url: str = "https://api.siliconflow.cn/v1/",
-=======
->>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
 ) -> EmbeddingProvider:
     """按配置构建 Embedding Provider（可插拔）。"""
     if provider == "dashscope" and dashscope_api_key:
@@ -206,15 +203,12 @@ def build_embedding_provider(
     if provider == "openai" and openai_api_key:
         logger.info("使用 OpenAI 兼容 Embedding: {}", embedding_model)
         return OpenAICompatibleEmbeddingProvider(openai_api_key, openai_base_url, model=embedding_model)
-<<<<<<< HEAD
     if provider == "siliconflow" and siliconflow_api_key:
         logger.info("使用 SiliconFlow（OpenAI 兼容）Embedding: {}", embedding_model)
         # BAAI/bge-m3 输出 1024 维向量
         return OpenAICompatibleEmbeddingProvider(
             siliconflow_api_key, siliconflow_base_url, model=embedding_model, dimension=1024
         )
-=======
->>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
     if provider == "ollama":
         logger.info("使用 Ollama Embedding: {}", embedding_model)
         return OllamaEmbeddingProvider(ollama_base_url, model=embedding_model)

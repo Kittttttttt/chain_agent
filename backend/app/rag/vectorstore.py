@@ -59,7 +59,6 @@ class VectorStore(ABC):
     @abstractmethod
     def count(self) -> int: ...
 
-<<<<<<< HEAD
     def all_docs(self) -> list[StoredDocument]:
         """全量返回库中文档（默认空，用于重建 BM25 等内存索引）。"""
         return []
@@ -68,8 +67,6 @@ class VectorStore(ABC):
         """删除指定文档 ID 的全部 chunk，返回删除条数。"""
         return 0
 
-=======
->>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
     def clear(self) -> None: ...
 
 
@@ -107,7 +104,6 @@ class MemoryVectorStore(VectorStore):
     def count(self) -> int:
         return len(self._docs)
 
-<<<<<<< HEAD
     def all_docs(self) -> list[StoredDocument]:
         return list(self._docs)
 
@@ -116,8 +112,6 @@ class MemoryVectorStore(VectorStore):
         self._docs = [d for d in self._docs if d.metadata.get("doc_id") != doc_id]
         return before - len(self._docs)
 
-=======
->>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
     def clear(self) -> None:
         self._docs = []
 
@@ -205,7 +199,6 @@ class QdrantVectorStore(VectorStore):
     def count(self) -> int:
         return int(self._client.count(self._collection).count)
 
-<<<<<<< HEAD
     def all_docs(self) -> list[StoredDocument]:
         """全量拉取集合中文档（payload 还原原始 id 与文本，用于重建 BM25 索引）。"""
         docs: list[StoredDocument] = []
@@ -264,8 +257,6 @@ class QdrantVectorStore(VectorStore):
                 return len(points)
         return 0
 
-=======
->>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
     def clear(self) -> None:
         self._client.delete_collection(self._collection)
         self._vector_size = None

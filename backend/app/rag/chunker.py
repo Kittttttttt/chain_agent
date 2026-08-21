@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """文档切分：解析 → 清洗 → 标题/段落/句子/固定长度多级切块。
 
 设计要点：
@@ -22,15 +21,6 @@ _TITLE_RE = re.compile(r"^\s*(#{1,6})\s+(.+?)\s*$")
 # 空行分隔段落
 _PARA_SPLIT_RE = re.compile(r"\n\s*\n+")
 
-=======
-"""文档切分：解析 → 清洗 → 语义/递归切块。"""
-from __future__ import annotations
-
-import re
-
-from loguru import logger
-
->>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
 
 def parse_document(text: str) -> str:
     """基础清洗：去重空白、HTML 标签残留等。"""
@@ -87,7 +77,6 @@ def recursive_chunk_text(
     return chunks
 
 
-<<<<<<< HEAD
 def chunk_document(
     doc: Document,
     chunk_size: int = 512,
@@ -189,8 +178,6 @@ def _split_paragraphs(text: str) -> list[str]:
     return [p.strip() for p in _PARA_SPLIT_RE.split(text)]
 
 
-=======
->>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
 def _chunk_by_words(text: str, chunk_size: int, overlap: int) -> list[str]:
     words = text.split()
     pieces: list[str] = []
