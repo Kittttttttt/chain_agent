@@ -8,8 +8,12 @@ from typing import Any
 from loguru import logger
 
 from app.rag.bm25 import BM25Index
+<<<<<<< HEAD
 from app.rag.chunker import chunk_document, parse_document, recursive_chunk_text
 from app.rag.docloader import Document
+=======
+from app.rag.chunker import parse_document, recursive_chunk_text
+>>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
 from app.rag.embedding import EmbeddingProvider, build_embedding_provider
 from app.rag.hybrid import rrf_fusion
 from app.rag.reranker import EmbeddingReranker
@@ -47,6 +51,7 @@ class RAGPipeline:
     # ------------------------------------------------------------------
     # 入库
     # ------------------------------------------------------------------
+<<<<<<< HEAD
     def add_documents(self, docs: list[Document]) -> dict[str, Any]:
         """统一文档入库入口：Loader 产物 → Cleaning → Chunking → Embedding → Qdrant + BM25。
 
@@ -146,6 +151,34 @@ class RAGPipeline:
             self._bm25.index(self._bm25_docs)
         logger.info("删除文档 {}: {} chunks", doc_id, removed)
         return removed
+=======
+    def add_document(self, text: str, metadata: dict[str, Any] | None = None) -> int:
+        """解析并切块，embedding 后入库（向量 + BM25 同步）。"""
+        clean = parse_document(text)
+        chunks = recursive_chunk_text(clean, self._chunk_size, self._chunk_overlap)
+        if not chunks:
+            return 0
+        metadata = metadata or {}
+        chunk_ids: list[str] = []
+        stored: list[StoredDocument] = []
+        for i, chunk in enumerate(chunks):
+            cid = f"{metadata.get('doc_id', uuid.uuid4().hex)}-{i}"
+            vec = self._embedding.embed_one(chunk).vector
+            stored.append(
+                StoredDocument(id=cid, text=chunk, vector=vec, metadata={**metadata, "chunk_index": i})
+            )
+            chunk_ids.append(cid)
+        self._vector_store.add(stored)
+        self._bm25_docs.extend(
+            [
+                {"id": cid, "text": chunk, "metadata": {**metadata, "chunk_index": i}}
+                for cid, i, chunk in zip(chunk_ids, range(len(chunks)), chunks)
+            ]
+        )
+        self._bm25.index(self._bm25_docs)
+        logger.info("入库文档: {} chunks", len(chunks))
+        return len(chunks)
+>>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
 
     # ------------------------------------------------------------------
     # 检索
@@ -183,6 +216,7 @@ class RAGPipeline:
     def count(self) -> int:
         return self._vector_store.count()
 
+<<<<<<< HEAD
     def rebuild_bm25(self) -> int:
         """从向量库全量重建 BM25 索引。
 
@@ -217,6 +251,8 @@ def _derive_title(doc_id: str) -> str:
     """旧数据兼容：用 doc_id 作为兜底标题。"""
     return doc_id
 
+=======
+>>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
 
 @lru_cache
 def get_rag_pipeline() -> RAGPipeline:
@@ -231,8 +267,11 @@ def get_rag_pipeline() -> RAGPipeline:
         openai_base_url=s.openai_base_url,
         embedding_model=s.embedding_model,
         ollama_base_url=s.ollama_base_url,
+<<<<<<< HEAD
         siliconflow_api_key=s.siliconflow_api_key,
         siliconflow_base_url=s.siliconflow_base_url,
+=======
+>>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
     )
     vector_store = build_vector_store(
         backend=s.vector_backend,
@@ -242,7 +281,11 @@ def get_rag_pipeline() -> RAGPipeline:
         collection=s.qdrant_collection,
         dimension=s.embedding_dim,
     )
+<<<<<<< HEAD
     pipe = RAGPipeline(
+=======
+    return RAGPipeline(
+>>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
         embedding=embedding,
         vector_store=vector_store,
         chunk_size=s.chunk_size,
@@ -250,5 +293,8 @@ def get_rag_pipeline() -> RAGPipeline:
         top_k=s.rag_top_k,
         rerank_top_k=s.rag_rerank_top_k,
     )
+<<<<<<< HEAD
     pipe.rebuild_bm25()  # 服务重启后重建内存 BM25 索引（向量库持久化于 Qdrant）
     return pipe
+=======
+>>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6

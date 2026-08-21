@@ -4,11 +4,14 @@
 import axios from "axios";
 import type {
   HealthInfo,
+<<<<<<< HEAD
   KnowledgeDocument,
   KnowledgeIndexRequest,
   KnowledgeTestRequest,
   KnowledgeTestResponse,
   KnowledgeUploadResponse,
+=======
+>>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
   ResearchRequest,
   ResearchResponse,
   ResearchResult,
@@ -35,6 +38,7 @@ export const api = {
   /** 单个任务完整结果 */
   getRun: (id: string) =>
     http.get<ResearchResult>(`/api/research/${id}`).then((r) => r.data),
+<<<<<<< HEAD
 
   // -------------------------------------------------------------------------
   // 知识库
@@ -71,6 +75,8 @@ export const api = {
   /** 检索测试（Dense/BM25/Hybrid/Rerank 各阶段明细） */
   testKnowledge: (req: KnowledgeTestRequest) =>
     http.post<KnowledgeTestResponse>("/api/knowledge/test", req).then((r) => r.data),
+=======
+>>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
 };
 
 /**

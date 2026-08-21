@@ -107,6 +107,7 @@ class HealthResponse(BaseModel):
     search_provider: str
     vector_backend: str
     embedding_provider: str
+<<<<<<< HEAD
 
 
 # ---------------------------------------------------------------------------
@@ -168,3 +169,5 @@ class KnowledgeDeleteResponse(BaseModel):
     document_id: str
     deleted_chunks: int
     message: str = ""
+=======
+>>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6

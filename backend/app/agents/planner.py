@@ -19,8 +19,12 @@ _PLANNER_PROMPT = """你是一名资深研究规划师。请将用户的研究�
 要求：
 1. 分析问题的范围、时效性、所需信息来源（web/arxiv/github/document）。
 2. 拆解为 3~6 个子任务，每个子任务应相互独立、可并行执行。
+<<<<<<< HEAD
 3. 若问题涉及项目内置资料/内部知识库（如 RAG、检索、向量库、研究框架等内部主题），必须把其中一个子任务的 required_sources 设为 ["document"]，以触发知识库检索。
 4. 输出严格的 JSON，不要输出其他内容，格式如下：
+=======
+3. 输出严格的 JSON，不要输出其他内容，格式如下：
+>>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
 {{
   "goal": "研究目标一句话概括",
   "subtasks": [
@@ -28,7 +32,11 @@ _PLANNER_PROMPT = """你是一名资深研究规划师。请将用户的研究�
       "id": "task_1",
       "question": "子任务具体问题",
       "priority": "high|medium|low",
+<<<<<<< HEAD
       "required_sources": ["web", "arxiv", "github", "document"]
+=======
+      "required_sources": ["web", "arxiv", "github"]
+>>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
     }}
   ]
 }}

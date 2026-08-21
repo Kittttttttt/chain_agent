@@ -195,6 +195,7 @@ export interface TraceEntry {
   detail: string;
   extra?: AgentEvent;
 }
+<<<<<<< HEAD
 
 // ---------------------------------------------------------------------------
 // 知识库（Document Ingestion）
@@ -243,3 +244,5 @@ export interface KnowledgeTestResponse {
   hybrid: RetrievedChunk[];
   reranked: RetrievedChunk[];
 }
+=======
+>>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6

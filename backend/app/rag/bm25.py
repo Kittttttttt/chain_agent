@@ -13,6 +13,7 @@ from app.rag.vectorstore import RetrievedChunk
 
 
 def _tokenize(text: str) -> list[str]:
+<<<<<<< HEAD
     """轻量分词：英文按词切分，中文按单字 + 双字组（bigram）切分。
 
     仅靠 `[a-z0-9]` 会丢弃全部中文，导致 BM25 对中文查询恒为空、
@@ -27,6 +28,10 @@ def _tokenize(text: str) -> list[str]:
             tokens.extend(seg)  # 单字
             tokens.extend(seg[i : i + 2] for i in range(len(seg) - 1))  # bigram
     return tokens
+=======
+    """轻量分词：按非字母数字切分，小写化。"""
+    return re.findall(r"[a-z0-9]+", text.lower())
+>>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
 
 
 class BM25Index:

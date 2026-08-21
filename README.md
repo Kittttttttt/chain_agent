@@ -12,6 +12,7 @@
 
 ## 核心特性
 
+<<<<<<< HEAD
 | 模块          | 说明                                                                                                     |
 | ------------- | -------------------------------------------------------------------------------------------------------- |
 | Agent Loop    | LangGraph StateGraph：Planner → Worker → Tool → Observation → Evaluation → Continue/Finish 真实循环 |
@@ -22,6 +23,18 @@
 | MCP           | FastMCP Server 独立暴露 search/arxiv/github/document 工具                                                |
 | Evaluation    | 基线对比（单 LLM / 搜索+LLM）+ 指标 + Benchmark 报告                                                     |
 | Observability | LangSmith Tracing（llm_provider / tools / tokens / latency）                                             |
+=======
+| 模块 | 说明 |
+|---|---|
+| Agent Loop | LangGraph StateGraph：Planner → Worker → Tool → Observation → Evaluation → Continue/Finish 真实循环 |
+| Tool Calling | 统一 Tool 层（Pydantic Schema / 超时 / 重试 / 错误处理 / 调用记录），LLM 自主选工具 |
+| RAG | Dense Retrieval + BM25 + Hybrid(RRF) + Rerank，可插拔 Embedding / 向量库 |
+| Citation | Claim → Evidence → Source 映射，无法验证的引用标记 `unverified`，禁止编造 |
+| Memory | 短时记忆（LangGraph Checkpointer）+ 长时记忆（SQLite/PostgreSQL）+ Context 压缩 |
+| MCP | FastMCP Server 独立暴露 search/arxiv/github/document 工具 |
+| Evaluation | 基线对比（单 LLM / 搜索+LLM）+ 指标 + Benchmark 报告 |
+| Observability | LangSmith Tracing（llm_provider / tools / tokens / latency） |
+>>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
 
 ## 架构
 
@@ -76,6 +89,7 @@ cd backend
 uvicorn app.main:app --reload --port 8000
 ```
 
+<<<<<<< HEAD
 | 端点                                  | 说明               |
 | ------------------------------------- | ------------------ |
 | `GET /health`                       | 健康检查           |
@@ -94,6 +108,18 @@ uvicorn app.main:app --reload --port 8000
 cd D:\some_code\trae_code\DeepResearch\frontend
 npm run dev
 ```
+=======
+| 端点 | 说明 |
+|---|---|
+| `GET /health` | 健康检查 |
+| `POST /api/research` | 异步受理研究任务 |
+| `POST /api/research/sync` | 同步执行（测试用） |
+| `GET /api/research/{id}` | 研究结果 |
+| `GET /api/research/{id}/trace` | 执行轨迹 |
+| `GET /api/research/{id}/sources` | 来源列表 |
+| `GET /api/research/{id}/evaluation` | 评估指标 |
+| `GET /api/research/{id}/stream` | SSE 流式进度 |
+>>>>>>> 5c75f1da527ef6958155c67f4b87d0c0297882d6
 
 ### 5. 运行 MCP Server
 
